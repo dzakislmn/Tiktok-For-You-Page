@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Journey of Us ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- 1. RESET & VARIABLES --- */
+        :root {
+            --primary: #ff5e78;
+            --secondary: #ff8fa3;
+            --bg-color: #fff0f3;
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --text-main: #6d4450;
+            --text-sub: #a37e8c;
+            --shadow: 0 15px 35px rgba(255, 94, 120, 0.15);
+            --ease-bouncy: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            overflow: hidden; 
+            color: var(--text-main);
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* --- 2. BACKGROUND ANIMATION --- */
+        .bg-hearts {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden; z-index: -1; pointer-events: none;
+        }
+        .heart-bg {
+            position: absolute; bottom: -10vh;
+            background-color: rgba(255, 143, 163, 0.3);
+            display: inline-block;
+            width: 20px; height: 20px;
+            margin: 0 10px;
+            transform: rotate(45deg);
+            animation: floatUp 15s linear infinite;
+        }
+        .heart-bg::before, .heart-bg::after {
+            content: ""; position: absolute; width: 20px; height: 20px;
+            background-color: inherit; border-radius: 50%;
+        }
+        .heart-bg::before { top: -10px; left: 0; }
+        .heart-bg::after { top: 0; left: -10px; }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(45deg) scale(0.8); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-120vh) rotate(45deg) scale(1.2); opacity: 0; }
+        }
+
+        /* --- 3. CONTAINER & SLIDES --- */
+        .container {
+            width: 100vw; height: 100vh;
+            display: flex;
+            transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        .slide {
+            min-width: 100vw; 
+            height: 100vh;
+            display: flex; flex-direction: column;
+            justify-content: center; 
+            align-items: center;
+            padding: 40px 20px 80px 20px; 
+            position: relative;
+            text-align: center;
+            overflow-y: auto; 
+            overflow-x: hidden;
+        }
+        
+        .slide::before, .slide::after { content: ''; flex: 0 0 auto; height: 20px; }
+
+        h1 {
+            font-family: 'Fredoka One', cursive;
+            color: var(--primary);
+            font-size: 3rem; margin-bottom: 10px; margin-top: 0;
+            text-shadow: 4px 4px 0px rgba(255,200,210,0.5);
+            opacity: 0; transform: translateY(30px);
+            transition: all 0.8s var(--ease-bouncy);
+            flex-shrink: 0;
+        }
+        p {
+            font-size: 1.2rem; font-weight: 600; max-width: 600px;
+            line-height: 1.6; color: var(--text-main);
+            opacity: 0; transform: translateY(30px);
+            transition: all 0.8s var(--ease-bouncy) 0.1s;
+        }
+
+        .slide.active h1, .slide.active p, .slide.active .nav-btn, .slide.active .final-message {
+            opacity: 1; transform: translateY(0);
+        }
+
+        /* --- 4. BUTTONS --- */
+        .nav-btn {
+            margin-top: 30px;
+            margin-bottom: 20px; 
+            padding: 16px 40px;
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 50px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.1rem; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(255, 94, 120, 0.2);
+            transition: all 0.3s ease;
+            position: relative; overflow: hidden;
+            opacity: 0; transform: translateY(20px);
+            transition-delay: 0.3s;
+            flex-shrink: 0; 
+            z-index: 10;
+        }
+        .nav-btn::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--primary); z-index: -1;
+            transform: scaleX(0); transform-origin: right;
+            transition: transform 0.4s ease;
+        }
+        .nav-btn:hover { color: white; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255, 94, 120, 0.4); }
+        .nav-btn:hover::before { transform: scaleX(1); transform-origin: left; }
+
+        /* --- 5. GALLERY GRID --- */
+        .gallery-wrapper {
+            width: 100%; max-width: 1200px; 
+            max-height: 70vh; 
+            overflow-y: auto; padding: 20px;
+            scrollbar-width: thin; scrollbar-color: var(--secondary) transparent;
+        }
+        .gallery-wrapper::-webkit-scrollbar { width: 6px; }
+        .gallery-wrapper::-webkit-scrollbar-thumb { background-color: var(--secondary); border-radius: 10px; }
+
+        .gallery-grid {
+            display: grid; gap: 20px; width: 100%;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .photo-card {
+            background: white;
+            padding: 10px; border-radius: 20px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform 0.4s var(--ease-bouncy), box-shadow 0.3s ease;
+            opacity: 0; transform: translateY(40px) scale(0.9);
+            position: relative;
+        }
+        .slide.active .photo-card {
+            opacity: 1; transform: translateY(0) scale(1);
+        }
+        .slide.active .photo-card:nth-child(odd) { transition-delay: 0.2s; }
+        .slide.active .photo-card:nth-child(even) { transition-delay: 0.3s; }
+
+        .photo-card:hover { transform: translateY(-8px) scale(1.02); z-index: 10; }
+        
+        .photo-card img {
+            width: 100%; aspect-ratio: 1/1; object-fit: cover;
+            border-radius: 15px; border: 1px solid #eee;
+            background-color: #ffd1dc;
+        }
+        /* Style cadangan jika foto tidak ketemu */
+        .photo-card img:not([src])::after, 
+        .photo-card img[src=""]::after {
+            content: "Foto tidak ditemukan";
+            display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffe0e6; display: flex; align-items: center; justify-content: center;
+            color: var(--primary); font-size: 0.8rem;
+        }
+
+        .photo-caption { margin-top: 12px; font-size: 0.9rem; font-weight: 700; line-height: 1.3; }
+        .photo-date { font-size: 0.75rem; color: var(--text-sub); margin-top: 5px; font-weight: 600; }
+
+        /* --- 6. QUIZ FIXED --- */
+        .quiz-wrapper {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 2px solid white;
+            padding: 20px; border-radius: 25px;
+            width: 90%; max-width: 500px; margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            flex-shrink: 0; 
+            transition: all 0.3s ease;
+        }
+        .quiz-btn {
+            width: 100%; padding: 12px 20px; margin: 5px 0;
+            border: none; border-radius: 12px;
+            background: white; color: var(--text-main); font-weight: 700;
+            text-align: left; cursor: pointer;
+            transition: 0.2s;
+        }
+        .quiz-btn:active { transform: scale(0.98); }
+        .quiz-result-box {
+            padding: 10px; margin-top: 10px; border-radius: 10px;
+            font-weight: bold; font-size: 0.9rem; display: none;
+        }
+        .quiz-result-box.show { display: block; animation: popIn 0.4s var(--ease-bouncy); }
+        .result-success { background: #d1e7dd; color: #0f5132; }
+        .result-retry { background: #f8d7da; color: #842029; }
+
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* --- 7. TIMER & FINAL MESSAGE --- */
+        .timer-box {
+            background: white; padding: 20px 30px; border-radius: 40px;
+            border: 4px solid var(--secondary);
+            font-size: 1.1rem; font-weight: 800; color: var(--primary);
+            box-shadow: var(--shadow); margin: 30px 0;
+            animation: pulseSlow 3s infinite;
+        }
+        @keyframes pulseSlow { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+
+        .final-message {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 3px dashed var(--primary);
+            padding: 25px; border-radius: 25px;
+            font-size: 1.3rem; font-weight: 800; color: #d63384;
+            max-width: 85%; margin: 20px auto;
+            box-shadow: 0 10px 40px rgba(214, 51, 132, 0.2);
+            line-height: 1.5;
+        }
+
+        /* --- 8. MODAL --- */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; transition: 0.4s ease;
+            z-index: 2000;
+        }
+        .modal.active { opacity: 1; visibility: visible; }
+        
+        .modal-content-wrapper {
+            position: relative; text-align: center;
+            transform: scale(0.8); transition: 0.5s var(--ease-bouncy);
+        }
+        .modal.active .modal-content-wrapper { transform: scale(1); }
+
+        .modal-img {
+            max-width: 90vw; max-height: 65vh;
+            border-radius: 20px; border: 5px solid white;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+        .modal-text {
+            background: white; padding: 15px 25px; border-radius: 30px;
+            display: inline-block; margin-top: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .close-btn {
+            position: absolute; top: -20px; right: -20px;
+            background: var(--primary); color: white;
+            width: 45px; height: 45px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* --- 9. MUSIC BTN --- */
+        .music-control {
+            position: fixed; bottom: 25px; right: 25px;
+            width: 50px; height: 50px;
+            background: var(--primary); border: 3px solid white;
+            border-radius: 50%; color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; cursor: pointer; z-index: 1000;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            animation: spin 8s linear infinite;
+        }
+        .music-control.paused { animation-play-state: paused; background: var(--secondary); }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* --- 10. RESPONSIVE --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            p { font-size: 1rem; padding: 0 15px; }
+            .slide { justify-content: flex-start; padding-top: 60px; }
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            .photo-card { padding: 8px; }
+            .photo-caption { font-size: 0.8rem; }
+            .final-message { font-size: 1.1rem; padding: 20px; }
+            .nav-btn { padding: 12px 30px; font-size: 1rem; }
+            .modal-img { max-width: 85vw; max-height: 50vh; }
+            .close-btn { top: -15px; right: -10px; width: 40px; height: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-hearts" id="heart-container"></div>
+
+<div id="imageModal" class="modal" onclick="closeModalOnBg(event)">
+    <div class="modal-content-wrapper">
+        <div class="close-btn" onclick="closeModal()">&times;</div>
+        <img class="modal-img" id="modalImg">
+        <div class="modal-text">
+            <div style="font-weight: 800; color: #6d4450;" id="modalCaption"></div>
+            <div style="font-size: 0.85rem; color: #a37e8c; margin-top: 4px;" id="modalDate"></div>
+        </div>
+    </div>
+</div>
+
+<audio id="bg-music" loop>
+    <source src="Taylor Swift - The Fate of Ophelia.mp3" type="audio/mpeg">
+</audio>
+<div class="music-control paused" onclick="toggleMusic()">🎵</div>
+
+<div class="container" id="container">
+
+    <div class="slide active"> 
+        <h1>Hai Sayang! ❤️</h1>
+        <p>Selamat datang di halaman spesial ini.<br>Aku buat ini khusus untuk kamu.</p>
+        <button class="nav-btn" onclick="nextSlide(1)">Mulai Masuk ✨</button>
+    </div>
+
+    <div class="slide">
+        <h1>Tentang Kita</h1>
+        <p>Setiap detik bersamamu adalah momen berharga.<br>Yuk, lihat kenangan kita.</p>
+        <button class="nav-btn" onclick="nextSlide(2)">Buka Galeri 📸</button>
+    </div>
+
+    <div class="slide">
+        <div style="font-family: 'Fredoka One'; font-size: 2rem; color: var(--primary); margin-bottom: 15px; margin-top: 15px;">Galeri Kita</div>
+        
+        <div class="gallery-wrapper">
+            <div class="gallery-grid">
+                
+                <div class="photo-card" onclick="openModal(this)">
+                    <img src="img_1.jpg" alt="Foto 1">
+                    <div class="photo-caption">Foto pertama kali bareng hehe</div>
+                    <div class="photo-date">28 Agustus 2023</div>
+                </div>
+
+                <div class="photo-card" onclick="openModal(this)">
+                    <img src="img_2.jpg" alt="Foto 2">
+                    <div class="photo-caption">Kita jalan-jalan bareng pertama kali😍</div>
+                    <div class="photo-date">2 September 2023</div>
+                </div>
+
+                <div class="photo-card" onclick="openModal(this)">
+                    <img src="img_3.jpg" alt="Foto 3">
+                    <div class="photo-caption">Lanjutan jalan-jalan hari sebelumnya❤️</div>
+                    <div class="photo-date">3 September 2023</div>
+                </div>
+
+                <div class="photo-card" onclick="openModal(this)">
+                    <img src="img_4.jpg" alt="Foto 4">
+                    <div class="photo-caption">Foto berdua sebelum buat tugas film kelas💕</div>
+                    <div class="photo-date">6 September 2023</div>
+                </div>
+
+                <div class="photo-card" onclick="openModal(this)">
+                    <img src="img_5.jpg" alt="Foto 5">
+                    <div class="photo-caption">Pap pertama dari cewek imupp😘</div>
+                    <div class="photo-date">8 September 2023</div>
+                </div>
+
+                <div class="photo-card" onclick="openModal(this)">
+                    <img src="img_6.jpg" alt="Foto 6">
+                    <div class="photo-caption">Kupikir cuma ketemu pas SMA~</div>
+                    <div class="photo-date">20 Maret 2024</div>
+                </div>
+
+                <div class="photo-card" onclick="openModal(this)">
+                    <img src="img_7.jpg" alt="Foto 7">
+                    <div class="photo-caption">Eh, kita masih bareng pas kuliah dong😎</div>
+                    <div class="photo-date">1 April 2024</div>
+                </div>
+
+                <div class="photo-card" onclick="openModal(this)">
+                    <img src="img_8.jpg" alt="Foto 8">
+                    <div class="photo-caption">Aku dirayain oleh kamuuu😲</div>
+                    <div class="photo-date">9 Mei 2024</div>
+                </div>
+
+                <div class="photo-card" onclick="openModal(this)">
+                    <img src="img_9.jpg" alt="Foto 9">
+                    <div class="photo-caption">Sekelas lagi pas kuliah!😎</div>
+                    <div class="photo-date">27 Agustus 2024</div>
+                </div>
+
+                <div class="photo-card" onclick="openModal(this)">
+                    <img src="img_10.jpg" alt="Foto 10">
+                    <div class="photo-caption">Rayain balik ulang tahun kamu dong🤩</div>
+                    <div class="photo-date">3 Oktober 2024</div>
+                </div>
+
+                <div class="photo-card" onclick="openModal(this)">
+                    <img src="img_11.jpg" alt="Foto 11">
+                    <div class="photo-caption">Dirayain lagi OMG🤩</div>
+                    <div class="photo-date">9 Mei 2025</div>
+                </div>
+
+                <div class="photo-card" onclick="openModal(this)">
+                    <img src="img_12.jpg" alt="Foto 12">
+                    <div class="photo-caption">Gas rayain balik kamu😘❤️</div>
+                    <div class="photo-date">3 Oktober 2025</div>
+                </div>
+
+                <div class="photo-card" onclick="openModal(this)">
+                    <img src="img_13.jpg" alt="Foto 13">
+                    <div class="photo-caption">Jalan-jalan jauh pertama kali hehe😘</div>
+                    <div class="photo-date">6 Desember 2025</div>
+                </div>
+
+                <div class="photo-card" onclick="openModal(this)">
+                    <img src="img_14.jpg" alt="Foto 14">
+                    <div class="photo-caption">Tahun baruan & bakar-bakar bareng</div>
+                    <div class="photo-date">31 Des '25 - 1 Jan '26</div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="nav-btn" onclick="nextSlide(3)">Main Kuis Yuk! 🎮</button>
+    </div>
+
+    <div class="slide">
+        <h1>Kuis Cinta ❤️</h1>
+        
+        <div class="quiz-wrapper">
+            <div style="margin-bottom:10px; font-weight:bold;">1. Moment paling berkesan?</div>
+            <button class="quiz-btn" onclick="showQuiz1('Jawaban manis banget! 🥰')">Moment pernyataan cinta</button>
+            <button class="quiz-btn" onclick="showQuiz1('Petualangan seru kita! 🚗')">Moment jalan-jalan</button>
+            <button class="quiz-btn" onclick="showQuiz1('Semoga selamanya ya! 🎆')">Moment tahun baru</button>
+            <div id="q1-result" class="quiz-result-box result-success"></div>
+        </div>
+
+        <div class="quiz-wrapper">
+            <div style="margin-bottom:10px; font-weight:bold;">2. Makanan favoritku?</div>
+            <button class="quiz-btn" onclick="checkQuiz2(false)">Daging</button>
+            <button class="quiz-btn" onclick="checkQuiz2(true)">Semuanya benar</button>
+            <button class="quiz-btn" onclick="checkQuiz2(false)">Mie</button>
+            <div id="q2-result" class="quiz-result-box"></div>
+        </div>
+
+        <button class="nav-btn" onclick="nextSlide(4)">Lihat Waktu Kita ⏳</button>
+    </div>
+
+    <div class="slide">
+        <h1>Waktu Bersama</h1>
+        <p>Sejak <strong>16 November</strong>, dunia jadi lebih indah.</p>
+        <div class="timer-box" id="timer">Loading...</div>
+        <button class="nav-btn" onclick="nextSlide(5)">Pesan Terakhir 💌</button>
+    </div>
+
+    <div class="slide">
+        <h1>I Love You ❤️</h1>
+        <p>Terima kasih sudah menjadi bagian terindah dalam hidupku.<br>Ingatlah satu hal ini:</p>
+        
+        <div class="final-message">
+            "TENANG AJA AKU DISINI BERSAMAMU MESKIPUN DUNIA MEMBENCIMU"
+        </div>
+
+        <button class="nav-btn" onclick="nextSlide(0)">I Love You More ❤️</button>
+    </div>
+
+</div>
+
+<script>
+    // --- JS LOGIC ---
+    function createHearts() {
+        const container = document.getElementById('heart-container');
+        for(let i=0; i<15; i++) {
+            let heart = document.createElement('div');
+            heart.classList.add('heart-bg');
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.animationDuration = (Math.random() * 5 + 10) + "s";
+            heart.style.animationDelay = (Math.random() * 5) + "s";
+            container.appendChild(heart);
+        }
+    }
+    createHearts();
+
+    const container = document.getElementById('container');
+    const slides = document.querySelectorAll('.slide');
+    const music = document.getElementById('bg-music');
+    const musicIcon = document.querySelector('.music-control');
+    let currentIdx = 0;
+
+    function nextSlide(index) {
+        currentIdx = index;
+        container.style.transform = `translateX(-${currentIdx * 100}vw)`;
+        
+        slides.forEach((s, i) => {
+            s.classList.remove('active');
+            if(i === currentIdx) setTimeout(() => s.classList.add('active'), 100); 
+        });
+
+        if(currentIdx === 1 && music.paused) {
+            music.play().then(() => musicIcon.classList.remove('paused'))
+            .catch(e => console.log("Audio block", e));
+        }
+    }
+
+    function toggleMusic() {
+        if(music.paused) {
+            music.play();
+            musicIcon.classList.remove('paused');
+            musicIcon.innerHTML = "🎵";
+        } else {
+            music.pause();
+            musicIcon.classList.add('paused');
+            musicIcon.innerHTML = "🔇";
+        }
+    }
+
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImg');
+    const modalCap = document.getElementById('modalCaption');
+    const modalDate = document.getElementById('modalDate');
+
+    function openModal(card) {
+        const img = card.querySelector('img');
+        const capInfo = card.querySelector('.photo-caption').innerText;
+        const dateInfo = card.querySelector('.photo-date').innerText;
+
+        modalImg.src = img.src;
+        modalCap.innerText = capInfo;
+        modalDate.innerText = dateInfo;
+
+        modal.classList.add('active');
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+    }
+    
+    function closeModalOnBg(e) {
+        if(e.target === modal) closeModal();
+    }
+
+    function showQuiz1(msg) {
+        const res = document.getElementById('q1-result');
+        res.innerText = msg;
+        res.classList.add('show');
+    }
+
+    function checkQuiz2(isTrue) {
+        const res = document.getElementById('q2-result');
+        res.classList.remove('result-success', 'result-retry');
+        if(isTrue) {
+            res.innerText = "Yey! Jawaban kamu benar ❤️";
+            res.classList.add('result-success');
+        } else {
+            res.innerText = "Salah sayang, coba lagi ya 😹";
+            res.classList.add('result-retry');
+        }
+        res.classList.add('show');
+    }
+
+    const startDate = new Date(2024, 10, 16); 
+    
+    setInterval(() => {
+        const now = new Date();
+        const diff = now - startDate;
+        
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((diff / 1000 / 60) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+
+        document.getElementById('timer').innerText = 
+            `${d} Hari : ${h} Jam : ${m} Menit : ${s} Detik`;
+    }, 1000);
+
+</script>
+</body>
+</html>
